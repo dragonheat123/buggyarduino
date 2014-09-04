@@ -96,30 +96,36 @@ void loop()
   int pan = packetBuffer[2];
   int tilt = packetBuffer[3];
   
-  if (packetSize == NULL)
+  /*if (psi >=4){
+    if (sensorPin <650){
+    digitalWrite(Bat,HIGH); // pin 8 
+    digitalWrite(FC,LOW); //pin 4
+    }
+  }
+  if (psi<4){
+    digitalWrite(Bat,LOW); // pin 8 
+    digitalWrite(FC,HIGH); //pin 4
+  }*/
+  
+  /*if (packetSize == NULL)
   { //tamiyaServo.detach();
     tamiyaPan.detach();
     tamiyaTilt.detach();
 
-  };
+  };*/
   
   if (packetSize)
   {
     // read the packet into packetBuffer
     int len = Udp.read(packetBuffer,5);//len = maximum size of the buffer
     if (len > 0) packetBuffer[len] = 0;
-    //if (packetBuffer[4]==1){
+    if (packetBuffer[4]==1){
       
- 
-      //tamiyaServo.attach(9);
-        //tamiyaPan.attach(3);
-  //tamiyaTilt.attach(5);
-      
-      //tamiyaServo.write(map(servo,254,0,8,183));
+
   tamiyaServo.write(map(servo,0,254,180,0));
   tamiyaESC.write(map(esc,0,254,139,46));
   tamiyaPan.write(map(pan,254,0,30,150));
-  tamiyaTilt.write(map(tilt,254,0,45,135));
+  tamiyaTilt.write(map(tilt,254,0,30,150));
 
     //}
     
@@ -147,7 +153,7 @@ void loop()
       
   }
   
-  
+}
   //digitalWrite(switchPin, HIGH);
   //digitalWrite(Fc1,LOW);
   //}
