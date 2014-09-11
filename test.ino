@@ -16,6 +16,8 @@ byte packetBuffer[5];                           // buffer to hold incoming packe
 long last_sent = 0;
 char servo1[13];
 String str;
+int state;
+
 
 // Servo and ESC config
 Servo tamiyaServo;                              // create servo object
@@ -29,6 +31,7 @@ const int Bat = 8;
 const int FC = 4;
 int count=0;
 int count1=0;
+int psi = 6;
 
 // LED indictor
 #define LEDpin 1
@@ -46,9 +49,8 @@ void setup ()
   pinMode(Bat,OUTPUT);
   pinMode(FC,OUTPUT);
   digitalWrite(Bat,LOW); // pin 8 
-  digitalWrite(FC,HIGH); //pin 4
+  digitalWrite(FC,LOW); //pin 4
 
-  
   // adjust Servo and ESC to it's neutral position
   adjust_neutral();
       
@@ -96,16 +98,24 @@ void loop()
   int pan = packetBuffer[2];
   int tilt = packetBuffer[3];
   
-  /*if (psi >=4){
-    if (sensorPin <650){
-    digitalWrite(Bat,HIGH); // pin 8 
-    digitalWrite(FC,LOW); //pin 4
+  if (psi >=4){ //FC on condition
+    if (sensorPin >625){ //reading for 4A of current
+    digitalWrite(Bat,LOW); //parallel  
+    digitalWrite(FC,LOW);
+     state = 3; 
+    }
+    if (sensorPin <=625){ //reading for 4A of current
+    digitalWrite(Bat,HIGH); //FC on only
+    digitalWrite(FC,LOW);
+    state = 2; 
     }
   }
-  if (psi<4){
-    digitalWrite(Bat,LOW); // pin 8 
-    digitalWrite(FC,HIGH); //pin 4
-  }*/
+  if (psi<4){ //FC off condition
+    digitalWrite(Bat,LOW); //Bat on only
+    digitalWrite(FC,HIGH);
+   state = 1; 
+  }
+  
   
   /*if (packetSize == NULL)
   { //tamiyaServo.detach();
@@ -144,7 +154,7 @@ void loop()
     Serial.print(analogRead(A5));
 
   Udp.beginPacket(Udp.remoteIP(), 8081);
-  str=String(servo);
+  str=String(state);
   str = str + pan + tilt + esc;
   str.toCharArray(servo1,13);
   Udp.write(servo1,13);
